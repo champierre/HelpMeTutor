@@ -1,24 +1,30 @@
 var win = Titanium.UI.currentWindow;
 
-// var label = Titanium.UI.createLabel({
-//  color:'#999',
-//  text:'Please upload seats image.',
-//  font:{fontSize:20,fontFamily:'Helvetica Neue'},
-//  textAlign:'center',
-//  width:'auto'
-// });
-// 
-// win.add(label);
-
 var imageView = Titanium.UI.createImageView({
 	height:368,
 	width:320,
-  // top:20,
-  // left:10,
 	backgroundColor:'#999'
 });
 
-win.add(imageView);
+var arrow = Titanium.UI.createImageView({
+  top: 0,
+  left: 210,
+  url:'arrow.png',
+  height: 100,
+  width: 100
+});
+
+var label = Titanium.UI.createLabel({
+	color:'#999',
+	text:'Please upload the seats image.',
+	font:{fontSize:20,fontFamily:'Helvetica Neue'},
+	textAlign:'center',
+	width:'auto'
+});
+
+win.add(arrow);
+win.add(label);
+
 
 var popoverView;
 var arrowDirection;
@@ -54,6 +60,7 @@ upload_button.addEventListener('click', function(){
 
   		}
 
+      win.add(imageView);
   		Titanium.API.info('PHOTO GALLERY SUCCESS cropRect.x ' + cropRect.x + ' cropRect.y ' + cropRect.y  + ' cropRect.height ' + cropRect.height + ' cropRect.width ' + cropRect.width);
 
   	},
@@ -68,7 +75,6 @@ upload_button.addEventListener('click', function(){
   	popoverView:popoverView,
   	arrowDirection:arrowDirection,
   	mediaTypes:[Ti.Media.MEDIA_TYPE_VIDEO,Ti.Media.MEDIA_TYPE_PHOTO]
-  });
-  
+  });  
 });
 win.setRightNavButton(upload_button);

@@ -1,4 +1,5 @@
 var win = Titanium.UI.currentWindow;
+var room;
 
 var label = Titanium.UI.createLabel({
 	color:'#999',
@@ -10,39 +11,103 @@ var label = Titanium.UI.createLabel({
 
 win.add(label);
 
-function getStatus() {
+
+function openMordal() {
+  var style = Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL;
+	var presentation = Ti.UI.iPhone.MODAL_PRESENTATION_FULLSCREEN;
+	var modal_win = Ti.UI.createWindow({
+		backgroundColor:'#eee'
+	});
+  // var close_button = Ti.UI.createButton({
+  //  title:'Close',
+  //  width:100,
+  //  height:30,
+  //  top:100
+  // });
+  // close_button.addEventListener('click',function()
+  // {
+  //  modal_win.close();
+  // });
+  // modal_win.add(close_button);
+	
+  var l = Titanium.UI.createLabel({
+   top:50,
+   left:10,
+   width:300,
+   height:'auto',
+   color:'#777',
+   font:{fontSize:18},
+   text:'Specify the Room ID.'
+  });
+  
+  var text_field = Ti.UI.createTextField({
+    color:'#336699',
+    height:35,
+    top:80,
+    left:10,
+    width:250,
+    borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
+    keyboardType:Titanium.UI.KEYBOARD_ASCII
+  });
+  // var text_field = Titanium.UI.createTextField({
+  //    // color:'#336699',
+  //    // height:35,
+  //    // top:50,
+  //    // left:10,
+  //    // width:250,
+  //    // borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
+  //   });
+  
+  var ok_button = Titanium.UI.createButton({
+   top:130,
+   height:40,
+   width:200,
+   title:'OK'
+  });
+  modal_win.add(ok_button);
+  ok_button.addEventListener('click', function()
+  {
+    alert("Room ID is set to:" + text_field.value);
+    room = text_field.value;
+    modal_win.close();
+    getStatus(room);
+  });
+
+  modal_win.add(l);
+  modal_win.add(text_field);
+
+	modal_win.open({modal:true,modalTransitionStyle:style,navBarHidden:true});
+}
+
+
+function getStatus(room) {
 
 	// create table view data object
 	var data = [];
 
 	var xhr = Ti.Network.createHTTPClient();
 	xhr.timeout = 30000;
-  xhr.open("GET","http://libron.net/top/status");
+  xhr.open("GET","http://akirakusumo10.appspot.com/api/note/list?room=" + room);
   
 	xhr.onload = function()
 	{
 		try
 		{
 		  var jsonval = JSON.parse(this.responseText);
-      // alert(jsonval);
-      // var notes = jsonval.results;
       var notes = jsonval;
 
 			for (var i=0;i<notes.length;i++){
-        var seat = notes[i].seat;
+        var seat = notes[i].seatNo;
 				var name = notes[i].name;
 				var note = notes[i].note;
-				var duration = notes[i].duration;
-        
-        // var created_at = prettyDate(strtotime(tweets[c].created_at));
+				var duration = notes[i].time;
+        var help_me = notes[i].helpMe;
 				var bgcolor = (i % 2) == 0 ? '#fff' : '#eee';
 
 				var row = Ti.UI.createTableViewRow({hasChild:false,height:'auto',name:name,backgroundColor:bgcolor});
 
-				// Create a vertical layout view to hold all the info labels and images for each tweet
 				var note_view = Ti.UI.createView({
           height:'auto',
-          // heitht:32,
 					layout:'vertical',
 					left:5,
 					top:5,
@@ -50,29 +115,18 @@ function getStatus() {
 					right:5
 				});
 
-        // var av = Ti.UI.createImageView({
-        //    image:avatar,
-        //    left:0,
-        //    top:0,
-        //    height:48,
-        //    width:48
-        //  });
-        // // Add the avatar image to the view
-        // post_view.add(av);
-
-				var seat_label = Ti.UI.createLabel({
-					text:seat,
-					left:10,
-					width:120,
-          // top:-48,
-					bottom:2,
-					height:30,
-					textAlign:'left',
-					color:'#444444',
-					font:{fontFamily:'Trebuchet MS',fontSize:24,fontWeight:'bold'}
-				});
-				note_view.add(seat_label);
-
+        var seat_label = Ti.UI.createLabel({
+          text:seat,
+          left:10,
+          width:120,
+          bottom:2,
+          height:30,
+          textAlign:'left',
+          color:'#444444',
+          font:{fontFamily:'Trebuchet MS',fontSize:24,fontWeight:'bold'}
+        });
+        note_view.add(seat_label);
+								
 				var name_label = Ti.UI.createLabel({
 					text:name,
 					left:50,
@@ -87,19 +141,30 @@ function getStatus() {
 				// Add the username to the view
 				note_view.add(name_label);
 
-        var duration_label = Ti.UI.createLabel({
-           text:duration,
-           right:20,
-           top:-32,
-           bottom:2,
-           height:30,
-           textAlign:'right',
-           width:110,
-           color:i==1 ? '#ff0000' : '#444444',
-           font:{fontFamily:'Trebuchet MS',fontSize:24}
-        });
-				// Add the date to the view
-        note_view.add(duration_label);
+        if (help_me) {
+          var help_me_icon = Titanium.UI.createImageView({
+            top: -32,
+            left: 240,
+            url:'help_me.png',
+            height: 43,
+            width: 43
+          });
+          note_view.add(help_me_icon);
+        } else {
+          var duration_label = Ti.UI.createLabel({
+             text:duration,
+             right:20,
+             top:-32,
+             bottom:2,
+             height:30,
+             textAlign:'right',
+             width:110,
+             color:'#444444',
+             font:{fontFamily:'Trebuchet MS',fontSize:24}
+          });
+  				// Add the date to the view
+          note_view.add(duration_label);
+        }
 
         var note_text = Ti.UI.createLabel({
           text:note,
@@ -113,6 +178,7 @@ function getStatus() {
         });
 				// Add the note to the view
         note_view.add(note_text);
+
 				// Add the vertical layout view to the row
 				row.add(note_view);
         // row.className = 'item'+c;
@@ -144,12 +210,21 @@ function getStatus() {
 	xhr.send();
 }
 
+var set_room_button = Titanium.UI.createButton({
+  title:'Set Room'
+});
+
+set_room_button.addEventListener('click', function(){
+  openMordal();
+});
+win.setLeftNavButton(set_room_button);
+
 var reload_button = Titanium.UI.createButton({
   title:'Reload'
 });
 
 reload_button.addEventListener('click', function(){
-  getStatus();
+  getStatus(room);
 });
 win.setRightNavButton(reload_button);
 
@@ -165,7 +240,12 @@ var view = Ti.UI.createView({
 });
 
 win.add(view);
-win.add(actInd);
-actInd.show();
+if (room) {
+  win.add(actInd);
+  actInd.show();
+  getStatus(room);
+} else {
+  openMordal();
+  // alert("Please specify room ID.");
+}
 
-getStatus();
