@@ -19,8 +19,58 @@ var label = Titanium.UI.createLabel({
 	text:'Please upload the seats image.',
 	font:{fontSize:20,fontFamily:'Helvetica Neue'},
 	textAlign:'center',
-	width:'auto'
+	width:'auto',
+	top:-140
 });
+
+var sample1_label = Titanium.UI.createLabel({
+	color:'#999',
+	text:'Sample 1',
+	font:{fontSize:20,fontFamily:'Helvetica Neue'},
+	width:130,
+	top:-70,
+	left:50
+});
+
+var sample2_label = Titanium.UI.createLabel({
+	color:'#999',
+	text:'Sample 2',
+	font:{fontSize:20,fontFamily:'Helvetica Neue'},
+	width:130,
+	top: -70,
+	left:190
+});
+
+var sample1 = Titanium.UI.createImageView({
+  top: 165,
+  left: 20,
+  url:'seats.png',
+  height: 180,
+  width: 135
+});
+
+sample1.addEventListener('click', function(){
+  imageView.url = "seats.png"
+  win.add(imageView);
+});
+
+var sample2 = Titanium.UI.createImageView({
+  top: 165,
+  right: 20,
+  url:'seats.jpg',
+  height: 180,
+  width: 135
+});
+
+sample2.addEventListener('click', function(){
+  imageView.url = "seats.jpg"
+  win.add(imageView);
+});
+
+win.add(sample1_label);
+win.add(sample2_label);
+win.add(sample1);
+win.add(sample2);
 
 win.add(arrow);
 win.add(label);

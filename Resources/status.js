@@ -18,21 +18,10 @@ function openMordal() {
 	var modal_win = Ti.UI.createWindow({
 		backgroundColor:'#eee'
 	});
-  // var close_button = Ti.UI.createButton({
-  //  title:'Close',
-  //  width:100,
-  //  height:30,
-  //  top:100
-  // });
-  // close_button.addEventListener('click',function()
-  // {
-  //  modal_win.close();
-  // });
-  // modal_win.add(close_button);
 	
   var l = Titanium.UI.createLabel({
    top:50,
-   left:10,
+   left:20,
    width:300,
    height:'auto',
    color:'#777',
@@ -44,41 +33,49 @@ function openMordal() {
     color:'#336699',
     height:35,
     top:80,
-    left:10,
-    width:250,
+    left:20,
+    width:230,
     borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
-    keyboardType:Titanium.UI.KEYBOARD_ASCII
+    keyboardType:Titanium.UI.KEYBOARD_ASCII,
+    value:room
   });
-  // var text_field = Titanium.UI.createTextField({
-  //    // color:'#336699',
-  //    // height:35,
-  //    // top:50,
-  //    // left:10,
-  //    // width:250,
-  //    // borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
-  //   });
   
   var ok_button = Titanium.UI.createButton({
    top:130,
+   left:20,
    height:40,
-   width:200,
+   width:100,
    title:'OK'
   });
+  
+  var cancel_button = Titanium.UI.createButton({
+   top:130,
+   left:150,
+   height:40,
+   width:100,
+   title:'Cancel'
+  });
+  
   modal_win.add(ok_button);
+  modal_win.add(cancel_button);
   ok_button.addEventListener('click', function()
   {
-    alert("Room ID is set to:" + text_field.value);
     room = text_field.value;
+    win.title = room;
     modal_win.close();
     getStatus(room);
   });
-
+  cancel_button.addEventListener('click', function()
+  {
+    modal_win.close();
+    getStatus(room);
+  });
+  
   modal_win.add(l);
   modal_win.add(text_field);
 
 	modal_win.open({modal:true,modalTransitionStyle:style,navBarHidden:true});
 }
-
 
 function getStatus(room) {
 
@@ -144,7 +141,7 @@ function getStatus(room) {
         if (help_me) {
           var help_me_icon = Titanium.UI.createImageView({
             top: -32,
-            left: 240,
+            left: 250,
             url:'help_me.png',
             height: 43,
             width: 43
