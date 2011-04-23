@@ -100,7 +100,7 @@ function getStatus(room) {
         var seat = notes[i].seatNo;
 				var name = notes[i].name;
 				var note = notes[i].note;
-				var duration = notes[i].time;
+				var duration = notes[i].duration;
         var help_me = notes[i].helpMe;
 				var bgcolor = (i % 2) == 0 ? '#fff' : '#eee';
 
