@@ -2,12 +2,12 @@
 <ti:app xmlns:ti="http://ti.appcelerator.org">
 <id>com.helpmetutor</id>
 <name>HelpMeTutor</name>
-<version>0.0.4</version>
+<version>0.0.5</version>
 <publisher>ishihara</publisher>
 <url>http://helpmetutor.com</url>
 <description>No description provided</description>
 <copyright>2011 by ishihara</copyright>
-<icon>default_app_logo.png</icon>
+<icon>appicon.png</icon>
     <persistent-wifi>false</persistent-wifi>
     <prerendered-icon>false</prerendered-icon>
     <statusbar-style>default</statusbar-style>

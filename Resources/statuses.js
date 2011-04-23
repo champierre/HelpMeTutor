@@ -11,7 +11,6 @@ var label = Titanium.UI.createLabel({
 
 win.add(label);
 
-
 function openMordal() {
   var style = Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL;
 	var presentation = Ti.UI.iPhone.MODAL_PRESENTATION_FULLSCREEN;
@@ -101,7 +100,7 @@ function getStatus(room) {
         var help_me = notes[i].helpMe;
 				var bgcolor = (i % 2) == 0 ? '#fff' : '#eee';
 
-				var row = Ti.UI.createTableViewRow({hasChild:false,height:'auto',room:room,seatNo:seatNo,backgroundColor:bgcolor});
+				var row = Ti.UI.createTableViewRow({hasChild:false,height:'auto',name:name,room:room,seatNo:seatNo,backgroundColor:bgcolor});
 
 				var note_view = Ti.UI.createView({
           height:'auto',
@@ -115,7 +114,7 @@ function getStatus(room) {
         var seat_label = Ti.UI.createLabel({
           text:seatNo,
           left:10,
-          width:120,
+          width:100,
           bottom:2,
           height:30,
           textAlign:'left',
@@ -126,8 +125,8 @@ function getStatus(room) {
 								
 				var name_label = Ti.UI.createLabel({
 					text:name,
-					left:50,
-					width:120,
+					left:40,
+					width:130,
           top:-32,
 					bottom:2,
 					height:30,
@@ -138,43 +137,43 @@ function getStatus(room) {
 				// Add the username to the view
 				note_view.add(name_label);
 
-        if (help_me) {
-          var help_me_icon = Titanium.UI.createImageView({
-            top: -32,
-            left: 250,
-            url:'help_me.png',
-            height: 43,
-            width: 43
-          });
-          note_view.add(help_me_icon);
-        } else {
-          var duration_label = Ti.UI.createLabel({
-             text:duration,
-             right:20,
-             top:-32,
-             bottom:2,
-             height:30,
-             textAlign:'right',
-             width:110,
-             color:'#444444',
-             font:{fontFamily:'Trebuchet MS',fontSize:24}
-          });
-  				// Add the date to the view
-          note_view.add(duration_label);
-        }
+        var duration_label = Ti.UI.createLabel({
+           text:duration,
+           right:20,
+           top:-32,
+           bottom:2,
+           height:30,
+           textAlign:'right',
+           width:100,
+           color:'#444444',
+           font:{fontFamily:'Trebuchet MS',fontSize:16}
+        });
+				// Add the date to the view
+        note_view.add(duration_label);
 
         var note_text = Ti.UI.createLabel({
-          text:note,
+          text:note + "　",
           left:10,
           top:0,
           bottom:2,
           height:'auto',
-          width:280,
+          width:160,
           textAlign:'left',
           font:{fontSize:14}
         });
 				// Add the note to the view
         note_view.add(note_text);
+        
+        if (help_me) {
+          var help_me_icon = Titanium.UI.createImageView({
+            top: -46,
+            left: 180,
+            url:'help_me.png',
+            height: 37,
+            width: 37
+          });
+          note_view.add(help_me_icon);
+        }
 
 				// Add the vertical layout view to the row
 				row.add(note_view);
@@ -191,7 +190,8 @@ function getStatus(room) {
           var status_win = Titanium.UI.createWindow({
             url:"status.js",
             seatNo:e.rowData.seatNo,
-            room:e.rowData.room
+            room:e.rowData.room,
+            name:e.rowData.name
           });
           Titanium.UI.currentTab.open(status_win,{animated:true});
         // }

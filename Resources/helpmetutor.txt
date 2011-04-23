@@ -1,0 +1,14 @@
+10名くらいが参加する、ハンズオンの研修で、生徒は今やっていることを Chrome Extension のアプリでつぶやきます。
+先生は座席表とともに各生徒が今やっていることとそれにかかっている時間を iPhone アプリで確認できます。
+生徒はわからないことがあったら Help Me ボタンを押して助けを呼ぶことができます。
+
+
+
+
+半径3m以内にいる人の詳細
+
+プログラミングの勉強会などで、はまってしまったまま、長時間同じタスクをやりつづけてしまっている人。
+また、助けて欲しいのだけれど、先生が別の生徒のヘルプ中で順番待ちになってしまっている生徒。
+
+
+<object width="425" height="344"><param name="movie" value="http://www.youtube.com/v/0-3Npt_s4zU?hl=ja&fs=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/0-3Npt_s4zU?hl=ja&fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="425" height="344"></embed></object>
