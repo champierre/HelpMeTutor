@@ -27,7 +27,7 @@ var tab1 = Titanium.UI.createTab({
 var status_win = Titanium.UI.createWindow({  
     title:'Status',
     backgroundColor:'#fff',
-    url:'status.js'
+    url:'statuses.js'
 });
 var tab2 = Titanium.UI.createTab({  
     icon:'KS_nav_ui.png',

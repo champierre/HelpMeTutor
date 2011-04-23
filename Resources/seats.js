@@ -29,7 +29,7 @@ var sample1_label = Titanium.UI.createLabel({
 	font:{fontSize:20,fontFamily:'Helvetica Neue'},
 	width:130,
 	top:-70,
-	left:50
+	left:45
 });
 
 var sample2_label = Titanium.UI.createLabel({
