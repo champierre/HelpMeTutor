@@ -1,4 +1,5 @@
 Ti.include("constants.js");
+Ti.include("utilities.js");
 
 var win = Titanium.UI.currentWindow;
 var room;
@@ -103,7 +104,6 @@ function openMordal() {
 	modal_win.open({modal:true,modalTransitionStyle:style,navBarHidden:true});
 }
 
-
 function updateRoom(room, steps) {  
   var xhr = Ti.Network.createHTTPClient();
 	xhr.timeout = 30000;
@@ -127,6 +127,7 @@ var getStatus = function() {
 
 	// create table view data object
 	var data = [];
+	var vibrate = false;
 
 	var xhr = Ti.Network.createHTTPClient();
 	xhr.timeout = 30000;
@@ -143,11 +144,16 @@ var getStatus = function() {
         var seatNo = notes[i].seatNo;
 				var name = notes[i].name;
 				var current_step = notes[i].currentStep;
-				var duration = notes[i].duration;
+				var step_times = notes[i].stepTimes;
         var help_me = notes[i].helpMe;
+        var done = notes[i].done;
 				var bgcolor = (i % 2) == 0 ? '#fff' : '#eee';
 
 				var row = Ti.UI.createTableViewRow({hasChild:false,height:'auto',name:name,room:room,seatNo:seatNo,backgroundColor:bgcolor});
+
+        if (help_me　&& !done) {
+          vibrate = true;
+        }
 
 				var note_view = Ti.UI.createView({
           height:'auto',
@@ -184,42 +190,46 @@ var getStatus = function() {
 				// Add the username to the view
 				note_view.add(name_label);
 
+        var now = new Date();
+        var last_time = new Date(step_times[step_times.length - 1]);
+        var duration = now.getTime() - last_time.getTime();
+        
         var duration_label = Ti.UI.createLabel({
-           text:duration,
-           right:20,
-           top:-32,
-           bottom:2,
-           height:30,
-           textAlign:'right',
-           width:100,
-           color:'#444444',
-           font:{fontFamily:'Trebuchet MS',fontSize:16}
+           text: done ? '-' : formatDuration(duration),
+           right: 20,
+           top: -32,
+           bottom: 2,
+           height: 30,
+           textAlign: 'right',
+           width: 100,
+           color: '#444444',
+           font: {fontFamily:'Trebuchet MS',fontSize:16}
         });
 				// Add the date to the view
         note_view.add(duration_label);
 
         var current_step_label = Ti.UI.createLabel({
-          text:"Current Step: " + current_step,
-          left:10,
-          top:0,
-          bottom:2,
-          height:'auto',
-          width:160,
-          textAlign:'left',
-          font:{fontSize:14}
+          text: done ? "Done" : "Current Step: " + (current_step + 1),
+          left: 10,
+          top: 0,
+          bottom: 2,
+          height: 'auto',
+          width: 160,
+          textAlign: 'left',
+          font: {fontSize:14}
         });
 				// Add the note to the view
         note_view.add(current_step_label);
         
-        if (help_me) {
-          var help_me_icon = Titanium.UI.createImageView({
+        if (help_me || done) {
+          var icon = Titanium.UI.createImageView({
             top: -46,
             left: 180,
-            url:'help_me.png',
-            height: 37,
-            width: 37
+            url: done ? 'done.png' : 'help_me.png',
+            height: 43,
+            width: 43
           });
-          note_view.add(help_me_icon);
+          note_view.add(icon);
         }
 
 				// Add the vertical layout view to the row
@@ -241,6 +251,11 @@ var getStatus = function() {
       });
 			
 			win.add(tableview);
+			
+			if (vibrate) {
+        // alert("Help Me Tutor!!");
+    	  Titanium.Media.vibrate();
+    	}
 		}
 		catch(E){
 			alert(E);
@@ -248,7 +263,7 @@ var getStatus = function() {
 	};
 	// Get the data
 	xhr.send();
-}
+};
 
 var set_room_button = Titanium.UI.createButton({
   title:'Set Room'
@@ -257,16 +272,16 @@ var set_room_button = Titanium.UI.createButton({
 set_room_button.addEventListener('click', function(){
   openMordal();
 });
-win.setLeftNavButton(set_room_button);
+win.setRightNavButton(set_room_button);
 
-var reload_button = Titanium.UI.createButton({
-  title:'Reload'
-});
-
-reload_button.addEventListener('click', function(){
-  getStatus();
-});
-win.setRightNavButton(reload_button);
+// var reload_button = Titanium.UI.createButton({
+//   title:'Reload'
+// });
+// 
+// reload_button.addEventListener('click', function(){
+//   getStatus();
+// });
+// win.setRightNavButton(reload_button);
 
 var actInd = Titanium.UI.createActivityIndicator({
   top:160, 

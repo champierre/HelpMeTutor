@@ -50,7 +50,7 @@ var sample1 = Titanium.UI.createImageView({
 });
 
 sample1.addEventListener('click', function(){
-  imageView.url = "seats.png"
+  imageView.url = "seats.png";
   win.add(imageView);
 });
 
@@ -63,7 +63,7 @@ var sample2 = Titanium.UI.createImageView({
 });
 
 sample2.addEventListener('click', function(){
-  imageView.url = "seats.jpg"
+  imageView.url = "seats.jpg";
   win.add(imageView);
 });
 

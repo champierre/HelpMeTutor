@@ -1,4 +1,5 @@
 Ti.include("constants.js");
+Ti.include("utilities.js");
 
 var win = Titanium.UI.currentWindow;
 var room = win.room;
@@ -37,12 +38,12 @@ var getSeatStatus = function() {
       var jsonval = JSON.parse(this.responseText);
       var notes = jsonval;
       var step_times = notes[0].stepTimes;
-      var duration = notes[0].duration;
       var help_me = notes[0].helpMe;
       var current_step = notes[0].currentStep;
+      var done = notes[0].done;
 
-      for (var i = 0; i < step_times.length; i++){
-        var bgcolor = (i == current_step) ? "#ffc129" : ((i % 2) == 0 ? '#fff' : '#eee');
+      for (var i = 0; i < (done ? step_times.length - 1 : step_times.length); i++){    
+        var bgcolor = (i == current_step && !done) ? "#ffc129" : ((i % 2) == 0 ? '#fff' : '#eee');
         var row = Ti.UI.createTableViewRow({hasChild:false,height:'auto',backgroundColor:bgcolor});
         var note_view = Ti.UI.createView({
           height:'auto',
@@ -54,7 +55,7 @@ var getSeatStatus = function() {
         });
 
         var step_label = Ti.UI.createLabel({
-          text:"Step " + i,
+          text:"Step " + (i + 1),
           left:10,
           width:100,
           bottom:2,
@@ -66,15 +67,15 @@ var getSeatStatus = function() {
         note_view.add(step_label);
 
         var start_date = new Date(step_times[i]);
-        var end_date = new Date(step_times[i + 1]);
+        var end_date = (current_step == i) ? new Date() : new Date(step_times[i + 1]);
         
-        var start_time = format(start_date);
-        var end_time = format(end_date);
+        var start_time = formatTime(start_date);
+        var end_time = formatTime(end_date);
         
-        var difference = step_times[i + 1] - step_times[i];
+        var duration = end_date.getTime() - start_date.getTime();
         
         var duration_label = Ti.UI.createLabel({
-           text: (current_step == i) ? duration : formatDuration(difference),
+           text: formatDuration(duration),
            right:20,
            top:-24,
            bottom:2,
@@ -87,7 +88,7 @@ var getSeatStatus = function() {
         note_view.add(duration_label);
         
         var time_label = Ti.UI.createLabel({
-           text: (current_step == i) ? start_time + " - " : start_time + " - " + end_time,
+           text: ((current_step == i) ? start_time + " - " : start_time + " - " + end_time),
            right:20,
            top:0,
            bottom:2,
@@ -100,14 +101,14 @@ var getSeatStatus = function() {
         note_view.add(time_label);
 
         if (help_me && current_step == i) {
-          var help_me_icon = Titanium.UI.createImageView({
+          var icon = Titanium.UI.createImageView({
             top: -46,
             left: 180,
-            url:'help_me.png',
-            height: 37,
-            width: 37
+            url: 'help_me.png',
+            height: 43,
+            width: 43
           });
-          note_view.add(help_me_icon);
+          note_view.add(icon);
         }
 
         // Add the vertical layout view to the row
@@ -127,47 +128,15 @@ var getSeatStatus = function() {
   xhr.send();
 };
 
-var reload_button = Titanium.UI.createButton({
-  title:'Reload'
-});
-
-reload_button.addEventListener('click', function(){
-  getSeatStatus();
-});
-win.setRightNavButton(reload_button);
+// var reload_button = Titanium.UI.createButton({
+//   title:'Reload'
+// });
+// 
+// reload_button.addEventListener('click', function(){
+//   getSeatStatus();
+// });
+// win.setRightNavButton(reload_button);
 
 getSeatStatus();
 setInterval(getSeatStatus, 10000);
-
-function format(date) {
-  var hours = date.getHours();
-  if (hours < 10) {
-    hours = "0" + hours;
-  }
-  var minutes = date.getMinutes();
-  if (minutes < 10) {
-    minutes = "0" + minutes;
-  }
-  var seconds = date.getSeconds();
-  if (seconds < 10) {
-    seconds = "0" + seconds;
-  }
-  return hours + ":" + minutes + ":" + seconds;
-}
-
-function formatDuration(milli_seconds){
-  seconds = Math.floor(milli_seconds / 1000);
-  var h = Math.floor(seconds / 3600);
-  var m = Math.floor((seconds % 3600) / 60);
-  var s = seconds % 60;
-  if (h < 10){
-    h = "0" + h;
-  }
-  if (m < 10){
-    m = "0" + m;
-  }
-  if (s < 10){
-    s = "0" + s;
-  }
-  return h + ":" + m + ":" + s;
-}  
+ 
