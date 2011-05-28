@@ -1,5 +1,8 @@
+Ti.include("constants.js");
+
 var win = Titanium.UI.currentWindow;
 var room;
+var steps;
 
 var label = Titanium.UI.createLabel({
 	color:'#999',
@@ -39,8 +42,28 @@ function openMordal() {
     value:room
   });
   
+  var label_for_steps = Ti.UI.createLabel({
+    top: 130,
+    left: 20,
+    height:'auto',
+    color:'#777',
+    font:{fontSize:18},
+    text: 'Number of steps:'
+  });
+  
+  var steps_text_field = Ti.UI.createTextField({
+    color:'#336699',
+    height:35,
+    top:160,
+    left:20,
+    width:230,
+    borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
+    keyboardType:Titanium.UI.KEYBOARD_NUMBER_PAD,
+    value:steps
+  });
+  
   var ok_button = Titanium.UI.createButton({
-   top:130,
+   top:210,
    left:20,
    height:40,
    width:100,
@@ -48,7 +71,7 @@ function openMordal() {
   });
   
   var cancel_button = Titanium.UI.createButton({
-   top:130,
+   top:210,
    left:150,
    height:40,
    width:100,
@@ -60,30 +83,54 @@ function openMordal() {
   ok_button.addEventListener('click', function()
   {
     room = text_field.value;
+    steps = steps_text_field.value;
     win.title = room;
     modal_win.close();
-    getStatus(room);
+    updateRoom(room, steps);
+    getStatus();
   });
   cancel_button.addEventListener('click', function()
   {
     modal_win.close();
-    getStatus(room);
+    getStatus();
   });
   
   modal_win.add(l);
   modal_win.add(text_field);
+  modal_win.add(label_for_steps);
+  modal_win.add(steps_text_field);
 
 	modal_win.open({modal:true,modalTransitionStyle:style,navBarHidden:true});
 }
 
-function getStatus(room) {
+
+function updateRoom(room, steps) {  
+  var xhr = Ti.Network.createHTTPClient();
+	xhr.timeout = 30000;
+	
+	xhr.onerror = function(e)
+	{
+		Ti.UI.createAlertDialog({title:'Error', message:e.error}).show();
+		Ti.API.info('IN ERROR ' + e.error);
+	};
+	xhr.onload = function(e)
+	{
+		Ti.API.info('IN ONLOAD ' + this.status + ' readyState ' + this.readyState);
+	};
+	
+  xhr.open("POST", API_URL + "room/update");
+  xhr.send({name:room,totalStep:steps});
+}
+
+// function getStatus(room) {
+var getStatus = function() {
 
 	// create table view data object
 	var data = [];
 
 	var xhr = Ti.Network.createHTTPClient();
 	xhr.timeout = 30000;
-  xhr.open("GET","http://akirakusumo10.appspot.com/api/note/list?room=" + room);
+  xhr.open("GET", API_URL + "roommember/list?roomName=" + room);
   
 	xhr.onload = function()
 	{
@@ -95,7 +142,7 @@ function getStatus(room) {
 			for (var i=0;i<notes.length;i++){
         var seatNo = notes[i].seatNo;
 				var name = notes[i].name;
-				var note = notes[i].note;
+				var current_step = notes[i].currentStep;
 				var duration = notes[i].duration;
         var help_me = notes[i].helpMe;
 				var bgcolor = (i % 2) == 0 ? '#fff' : '#eee';
@@ -151,8 +198,8 @@ function getStatus(room) {
 				// Add the date to the view
         note_view.add(duration_label);
 
-        var note_text = Ti.UI.createLabel({
-          text:note + "　",
+        var current_step_label = Ti.UI.createLabel({
+          text:"Current Step: " + current_step,
           left:10,
           top:0,
           bottom:2,
@@ -162,7 +209,7 @@ function getStatus(room) {
           font:{fontSize:14}
         });
 				// Add the note to the view
-        note_view.add(note_text);
+        note_view.add(current_step_label);
         
         if (help_me) {
           var help_me_icon = Titanium.UI.createImageView({
@@ -184,17 +231,13 @@ function getStatus(room) {
 			var tableview = Titanium.UI.createTableView({data:data,minRowHeight:58});
 			
       tableview.addEventListener('click', function(e){
-        // alert(e.rowData.seatNo);
-        // if (e.rowData.seatNo && (e.rowData.seatNo == 0))
-        // {
-          var status_win = Titanium.UI.createWindow({
-            url:"status.js",
-            seatNo:e.rowData.seatNo,
-            room:e.rowData.room,
-            name:e.rowData.name
-          });
-          Titanium.UI.currentTab.open(status_win,{animated:true});
-        // }
+        var status_win = Titanium.UI.createWindow({
+          url:"status.js",
+          seatNo:e.rowData.seatNo,
+          room:e.rowData.room,
+          name:e.rowData.name
+        });
+        Titanium.UI.currentTab.open(status_win,{animated:true});
       });
 			
 			win.add(tableview);
@@ -221,7 +264,7 @@ var reload_button = Titanium.UI.createButton({
 });
 
 reload_button.addEventListener('click', function(){
-  getStatus(room);
+  getStatus();
 });
 win.setRightNavButton(reload_button);
 
@@ -237,12 +280,14 @@ var view = Ti.UI.createView({
 });
 
 win.add(view);
+
+setInterval(getStatus, 10000);
+
 if (room) {
   win.add(actInd);
   actInd.show();
-  getStatus(room);
+  getStatus();
 } else {
   openMordal();
-  // alert("Please specify room ID.");
 }
 
